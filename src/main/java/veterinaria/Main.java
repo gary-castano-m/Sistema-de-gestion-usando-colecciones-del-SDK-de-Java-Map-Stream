@@ -2,6 +2,9 @@ package veterinaria;
 
 import java.util.*;
 
+
+ //Clase principal del Sistema de Gestión de Veterinaria.
+
 public class Main {
 
     private static final Scanner scanner = new Scanner(System.in);
@@ -20,7 +23,7 @@ public class Main {
             System.out.println();
             switch (opcion) {
                 case 1  -> registrarAtencion();
-                case 2  -> verAtenciones();
+                case 2  -> verTodasLasAtenciones();
                 case 3  -> verPendientes();
                 case 4  -> procesarSiguiente();
                 case 5  -> verHistorial();
@@ -34,12 +37,15 @@ public class Main {
                 case 13 -> deshacerProcesamiento();
                 case 14 -> verCantidades();
                 case 15 -> { ejecutando = false; System.out.println("Hasta luego. ¡Cuide a sus mascotas!"); }
-                default -> System.out.println(" Opción no válida. Intente nuevamente.");
+                default -> System.out.println("Opción no válida. Intente nuevamente.");
             }
             if (ejecutando) pausar();
         }
         scanner.close();
     }
+
+
+    // MENÚ
 
     private static void mostrarMenu() {
         System.out.println("\n──────────────────────────────────────────────────────────");
@@ -63,13 +69,16 @@ public class Main {
         System.out.println("──────────────────────────────────────────────────────────");
     }
 
+
+    // OPCIÓN 1 – Registrar atención
+
     private static void registrarAtencion() {
         System.out.println("=== REGISTRAR NUEVA ATENCIÓN ===");
         System.out.print("Código de atención: ");
         String codigo = scanner.nextLine().trim().toUpperCase();
         System.out.print("Nombre de la mascota: ");
         String nombreMascota = scanner.nextLine().trim();
-        System.out.print("Especie: ");
+        System.out.print("Especie (Perro/Gato/Ave/Reptil/Otro): ");
         String especie = scanner.nextLine().trim();
         System.out.print("Nombre del propietario: ");
         String propietario = scanner.nextLine().trim();
@@ -79,12 +88,15 @@ public class Main {
         try {
             MascotaAtencion nueva = new MascotaAtencion(codigo, nombreMascota, especie, propietario, motivo);
             gestor.registrarAtencion(nueva);
-            System.out.println(" registrado exitosamente:");
+            System.out.println("✔  Atención registrada exitosamente:");
             System.out.println("   " + nueva);
         } catch (IllegalArgumentException e) {
-            System.out.println(" Error: " + e.getMessage());
+            System.out.println("✘  Error: " + e.getMessage());
         }
     }
+
+
+    // OPCIÓN 2 – Ver todas las atenciones (List)
 
     private static void verTodasLasAtenciones() {
         System.out.println("=== TODAS LAS ATENCIONES REGISTRADAS ===");
@@ -93,10 +105,12 @@ public class Main {
             System.out.println("No hay atenciones registradas.");
             return;
         }
-
+        // forEach sobre la List
         atenciones.forEach(a -> System.out.println("  " + a));
-        System.out.println("  Total: " + atenciones.length());
+        System.out.println("  Total: " + atenciones.size());
     }
+
+    // OPCIÓN 3 – Ver pendientes (Queue)
 
     private static void verPendientes() {
         System.out.println("=== ATENCIONES PENDIENTES (Cola FIFO) ===");
@@ -105,24 +119,29 @@ public class Main {
             System.out.println("No hay atenciones pendientes.");
             return;
         }
-
+        // Mostrar siguiente sin retirarlo (peek)
         System.out.println("  Siguiente a atender: " + pendientes.peek());
         System.out.println();
+        // Recorrer toda la cola con forEach
         pendientes.forEach(a -> System.out.println("  " + a));
         System.out.println("  Total pendientes: " + pendientes.size());
     }
+
+    // OPCIÓN 4 – Procesar siguiente (Queue → Deque)
 
     private static void procesarSiguiente() {
         System.out.println("=== PROCESAR SIGUIENTE ATENCIÓN ===");
         try {
             MascotaAtencion procesada = gestor.procesarSiguiente();
-            System.out.println(" Atención procesada exitosamente:");
+            System.out.println("✔  Atención procesada exitosamente:");
             System.out.println("   " + procesada);
             System.out.println("   Pendientes restantes: " + gestor.totalPendientes());
         } catch (IllegalStateException e) {
-            System.out.println("Error  " + e.getMessage());
+            System.out.println("✘  " + e.getMessage());
         }
     }
+
+    // OPCIÓN 5 – Ver historial (Deque)
 
     private static void verHistorial() {
         System.out.println("=== HISTORIAL DE ATENCIONES PROCESADAS (Pila LIFO) ===");
@@ -131,12 +150,14 @@ public class Main {
             System.out.println("El historial está vacío.");
             return;
         }
-
+        // peek: último procesado (cima de la pila)
         System.out.println("  Último procesado: " + historial.peek());
         System.out.println();
         historial.forEach(a -> System.out.println("  " + a));
         System.out.println("  Total en historial: " + historial.size());
     }
+
+    // OPCIÓN 6 – Buscar por código (Map)
 
     private static void buscarPorCodigo() {
         System.out.println("=== BUSCAR POR CÓDIGO DE ATENCIÓN (Map) ===");
@@ -151,6 +172,8 @@ public class Main {
         }
     }
 
+    // OPCIÓN 7 – Buscar por otro criterio (Stream)
+
     private static void buscarPorOtroCriterio() {
         System.out.println("=== BUSCAR POR OTRO CRITERIO (Stream) ===");
         System.out.println("  a) Por nombre de mascota");
@@ -162,23 +185,25 @@ public class Main {
             System.out.print("Nombre de la mascota: ");
             String nombre = scanner.nextLine().trim();
             gestor.buscarPorNombreMascota(nombre).ifPresentOrElse(
-                    a -> { System.out.println(" Encontrada:"); System.out.println("   " + a); },
-                    () -> System.out.println(" No se encontró ninguna mascota con ese nombre.")
+                    a -> { System.out.println("✔  Encontrada:"); System.out.println("   " + a); },
+                    () -> System.out.println("✘  No se encontró ninguna mascota con ese nombre.")
             );
         } else if (op.equals("b")) {
             System.out.print("Nombre del propietario: ");
             String propietario = scanner.nextLine().trim();
             var lista = gestor.buscarPorPropietario(propietario);
             if (lista.isEmpty()) {
-                System.out.println(" No se encontraron atenciones para ese propietario.");
+                System.out.println("✘  No se encontraron atenciones para ese propietario.");
             } else {
-                System.out.println(" Atenciones encontradas:");
+                System.out.println("✔  Atenciones encontradas:");
                 lista.forEach(a -> System.out.println("   " + a));
             }
         } else {
             System.out.println("Opción no válida.");
         }
     }
+
+    // OPCIÓN 8 – Filtrar (Stream)
 
     private static void filtrarAtenciones() {
         System.out.println("=== FILTRAR ATENCIONES (Stream) ===");
@@ -187,7 +212,7 @@ public class Main {
         System.out.print("Seleccione (a/b): ");
         String op = scanner.nextLine().trim().toLowerCase();
 
-        if (equals("a")) {
+        if (op.equals("a")) {
             System.out.print("Estado: ");
             String estado = scanner.nextLine().trim();
             var filtradas = gestor.filtrarPorEstado(estado);
@@ -201,6 +226,8 @@ public class Main {
             System.out.println("Opción no válida.");
         }
     }
+
+    // OPCIÓN 9 – Ordenar (Stream)
 
     private static void ordenarAtenciones() {
         System.out.println("=== ORDENAR ATENCIONES (Stream) ===");
@@ -222,13 +249,15 @@ public class Main {
         }
     }
 
+    // OPCIÓN 10 – Estadísticas (Stream + Map)
+
     private static void verEstadisticas() {
         System.out.println("=== ESTADÍSTICAS DEL SISTEMA (Stream + Map) ===");
 
         System.out.println("\n  Por estado:");
         gestor.estadisticasPorEstado()
-                .for((estado, cantidad) ->
-                             System.out.printf("    %-12s → %d atención(es)%n", estado, cantidad));
+                .forEach((estado, cantidad) ->
+                        System.out.printf("    %-12s → %d atención(es)%n", estado, cantidad));
 
         System.out.println("\n  Por especie:");
         gestor.estadisticasPorEspecie()
@@ -249,6 +278,8 @@ public class Main {
                 .forEach(nombre -> System.out.println("    · " + nombre));
     }
 
+    // OPCIÓN 11 – Agrupamientos (Stream + Collectors.groupingBy)
+
     private static void verAgrupamientos() {
         System.out.println("=== AGRUPAMIENTOS (Stream + Collectors.groupingBy) ===");
 
@@ -265,6 +296,8 @@ public class Main {
         });
     }
 
+    // OPCIÓN 12 – Cancelar pendiente
+
     private static void cancelarAtencion() {
         System.out.println("=== CANCELAR ATENCIÓN PENDIENTE ===");
         System.out.print("Código de atención a cancelar: ");
@@ -277,6 +310,8 @@ public class Main {
         }
     }
 
+    // OPCIÓN 13 – Deshacer último procesamiento (Deque → Queue)
+
     private static void deshacerProcesamiento() {
         System.out.println("=== DESHACER ÚLTIMO PROCESAMIENTO ===");
         try {
@@ -287,6 +322,8 @@ public class Main {
             System.out.println("✘  " + e.getMessage());
         }
     }
+
+    // OPCIÓN 14 – Cantidades
 
     private static void verCantidades() {
         System.out.println("=== CANTIDAD DE ELEMENTOS ===");
@@ -300,6 +337,8 @@ public class Main {
         System.out.println("    PROCESADO  : " + gestor.contarPorEstado("PROCESADO"));
         System.out.println("    CANCELADO  : " + gestor.contarPorEstado("CANCELADO"));
     }
+
+    // UTILIDADES
 
     private static void imprimirLista(List<MascotaAtencion> lista, String mensajeVacio) {
         if (lista.isEmpty()) {
