@@ -1,4 +1,3 @@
-
 package veterinaria;
 
 import java.util.Objects;
@@ -45,22 +44,28 @@ public class MascotaAtencion {
 
     // Setters
     public void setCodigoAtencion(String codigoAtencion){
-        this.codigoAtencion = codigoAtencion; }
+        this.codigoAtencion = codigoAtencion;
+    }
 
     public void setNombreMascota(String nombreMascota){
-        this.nombreMascota = nombreMascota; }
+        this.nombreMascota = nombreMascota;
+    }
 
     public void setEspecie(String especie){
-        this.especie = especie; }
+        this.especie = especie;
+    }
 
     public void setNombrePropietario(String nombrePropietario){
-        this.nombrePropietario = nombrePropietario; }
+        this.nombrePropietario = nombrePropietario;
+    }
 
     public void setMotivoConsulta(String motivoConsulta){
-        this.motivoConsulta = motivoConsulta; }
+        this.motivoConsulta = motivoConsulta;
+    }
 
     public void setEstado(String estado){
-        this.estado = estado; }
+        this.estado = estado;
+    }
 
     //toString
     @Override
@@ -71,7 +76,7 @@ public class MascotaAtencion {
         );
     }
 
-    
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
