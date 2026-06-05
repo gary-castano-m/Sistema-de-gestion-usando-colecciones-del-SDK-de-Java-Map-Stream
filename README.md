@@ -125,6 +125,10 @@ atenciones.stream().noneMatch(a -> a.getEstado().equals("CANCELADO"));
 
 ## Autor
 
+<p align="center">
+  <img src="images/img.png" alt="Logo" width="300"/>
+</p>
+
 Gary José Castaño Molina  
 Ingeniería de Software  
 Cod. 7502420050
